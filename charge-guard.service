@@ -1,0 +1,17 @@
+[Unit]
+Description=Charge Guard Battery Limiter for X00TD
+After=multi-user.target
+
+[Service]
+Type=simple
+# Caminho onde salvamos o script
+ExecStart=/usr/local/bin/charge-guard.sh
+# Importante: Reinicia sempre que cair (útil se o cabo for desconectado e gerar erro)
+Restart=always
+RestartSec=5
+# Roda como root para ter permissão de escrever em /sys/class/...
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
