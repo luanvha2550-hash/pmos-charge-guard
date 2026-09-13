@@ -4,6 +4,22 @@ Script POSIX (`/bin/sh`) que transforma um celular com PostmarketOS em servidor 
 
 Testado no **ASUS Zenfone Max Pro M1 (X00TD)** rodando **PostmarketOS edge** (Linux 6.17.4-sdm660, aarch64). Roda como serviço systemd.
 
+## Primeiro, o problema (pra quem tá chegando agora)
+
+Notebooks têm uma vantagem que celulares não têm: no notebook, dá pra ativar um limite de carga e a energia do carregador vai **direto pro sistema, sem passar pela bateria**. No celular não existe essa opção — **toda** energia que entra pelo carregador passa pela bateria até chegar no sistema.
+
+Consequência: se você desconecta o carregador, o celular descarrega até morrer. Se conecta, carrega até 100%. Não tem meio termo nativo. Em um servidor que fica na tomada 24 horas por dia, isso envelhece a bateria muito rápido.
+
+## A analogia do aquário 🐠
+
+O nosso objetivo é balancear a energia que entra pelo carregador com o consumo do aparelho. O script ajusta só a entrada:
+
+> Pense na bateria como um **aquário**. Ele tem um vazamento — que é o consumo (processador, tela, tudo que roda). E tem uma torneia aberta em cima — que é o carregador entrando.
+>
+> A gente consegue controlar **só a torneira**. E é isso que o script faz: deixa o aquário nem vazio e nem muito cheio (porque cheio demais força a bateria). A gente deixa ele perto de uns 70% e vai ajustando a torneira — abre mais quando precisa encher, fecha até a entrada empatar com o vazamento quando está no ponto.
+
+Na prática, o script faz o carregador entregar mais ou menos corrente conforme a porcentagem da bateria, mantendo o nível estável na faixa dos 70–75%. O aparelho fica lá, plugado na tomada, estável, sem estressar a célula.
+
 ## O que ele faz
 
 1. **Limita a carga em ~75%** — bateria de lítio em 24/7 sofre ficando em 100%. O script trabalha com uma banda de 70–75%: abaixo disso carrega forte (1,2 A), no alvo derruba a corrente pra ~350 mA e acima de 85% pra 150 mA (efeito "step charging" via `current_max`).
